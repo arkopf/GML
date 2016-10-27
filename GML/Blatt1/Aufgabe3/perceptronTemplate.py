@@ -29,18 +29,22 @@ def func(x, a, b):
 # @param maxi The maximum border of the input space
 # @param res The plotting resolution, how many points should be used per dimension
 def plotPerceptron(p, pts=None, func=None, mini=-1, maxi=1, res=500):
+    plt.plot([1,37,11],[2,4,6], 'ro')
+    plt.axis([0, 40, 0, 20])
+    plt.show()
     return
 
 # The Perceptron with the Standard Perceptron Learning Algorithm
 class Perceptron:
     # Initialize the weight vector with random values
     def __init__(self, dim):
-        return
+        self.weight = np.random.rand(dim+1)*2-1
+
     # Calculate and return the class for the given input instance x
     # @param x The given input instance
     # @return The output value of the perceptron {-1,1}
     def classify(self, x):
-        return
+        return x[0]*self.weight[1]+x[1]*self.weight[2]-self.weight[0]
         
     # Perform a learning step for a given training datum with input values x
     # and output value y in {-1,1}
@@ -49,7 +53,11 @@ class Perceptron:
     # @return False if the perceptron did not produce the desired output value, i.e. the learning adaptation has been performed
     #         True if the perceptron already produced the correct output value, i.e. no adaptation has been performed
     def learn(self, x, y):
-        return
+        if classify(x)==y:
+            return True
+        else:
+            self.weight
+            return False
 
     # Perform the complete perceptron learning algorithm on the dataset (x_i, y_i)
     # @param dataset The complete dataset given as a 2D list [inputvalues, outputvalues]
