@@ -9,6 +9,7 @@ from __future__ import division
 import numpy as np
 from matplotlib import pyplot as plt
 from matplotlib import patches as patches
+from matplotlib.cbook import pts_to_midstep
   
 
 # Linear target function (f(x))
@@ -29,8 +30,23 @@ def func(x, a, b):
 # @param maxi The maximum border of the input space
 # @param res The plotting resolution, how many points should be used per dimension
 def plotPerceptron(p, pts=None, func=None, mini=-1, maxi=1, res=500):
-    plt.plot([1,37,11],[2,4,6], 'ro')
-    plt.axis([0, 40, 0, 20])
+    valX, valY = zip(*pts)   
+    valXx = list()
+    valXo = list()
+    i = 0
+    while i<len(valX):
+        if valY[i]>0:
+            valXo.append(valX[i])
+        else:
+            valXx.append(valX[i])
+        i=i+1
+    for p in valXo:
+        plt.plot(p[0], p[1], 'ro')
+    for p in valXx:
+        plt.plot(p[0], p[1], 'bx')
+    plt.plot(p)
+    print(p)
+    #print(valXx)
     plt.show()
     return
 
@@ -44,7 +60,10 @@ class Perceptron:
     # @param x The given input instance
     # @return The output value of the perceptron {-1,1}
     def classify(self, x):
-        return x[0]*self.weight[1]+x[1]*self.weight[2]-self.weight[0]
+        if x[0]*self.weight[1]+x[1]*self.weight[2]-self.weight[0]<0:
+            return -1
+        else:
+            return 1
         
     # Perform a learning step for a given training datum with input values x
     # and output value y in {-1,1}
@@ -53,10 +72,16 @@ class Perceptron:
     # @return False if the perceptron did not produce the desired output value, i.e. the learning adaptation has been performed
     #         True if the perceptron already produced the correct output value, i.e. no adaptation has been performed
     def learn(self, x, y):
-        if classify(x)==y:
+        #print(x)
+        calcY = self.classify(x)
+        if calcY==y:
             return True
         else:
-            self.weight
+            vecX = [1,x[0],x[1]]
+            self.weight[0]=self.weight[0]+(-y)*vecX[0]
+            self.weight[1]=self.weight[1]+y*vecX[1]
+            self.weight[2]=self.weight[2]+y*vecX[2]
+            #print(self.weight)
             return False
 
     # Perform the complete perceptron learning algorithm on the dataset (x_i, y_i)
@@ -64,7 +89,17 @@ class Perceptron:
     # with inputvalues being a list of all input values which again are a list of coordinates for each dimension
     # and output values a list of all desired output values
     def learnDataset(self, dataset):
-        return
+        optimal = False
+        count=0
+        while(optimal==False):
+            optimal=True
+            count=count+1
+            for valX, valY in dataset:
+                if self.learn(valX, valY)==False:
+                    optimal=False
+                    #print("False"+str(valY))
+                #print("next")
+        return count
 
 # Main Program        
 if __name__ == "__main__":
@@ -85,7 +120,9 @@ if __name__ == "__main__":
         trainY.append(targetFunc(el))
     # Learn on the whole dataset
     dataset = list(zip(trainX, trainY))
-    p.learnDataset(dataset)
+    print(a)
+    print(b)
+    print("Iterations: "+str(p.learnDataset(dataset)))
     print('Terminated')
     # Plot the resulting approximation, training data and target function
     plotPerceptron(p, dataset, targetFunc)
