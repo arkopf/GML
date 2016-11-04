@@ -36,17 +36,27 @@ def plotPerceptron(p, pts=None, func=None, mini=-1, maxi=1, res=500):
     i = 0
     while i<len(valX):
         if valY[i]>0:
-            valXo.append(valX[i])
-        else:
             valXx.append(valX[i])
+        else:
+            valXo.append(valX[i])
         i=i+1
-    for p in valXo:
-        plt.plot(p[0], p[1], 'ro')
-    for p in valXx:
-        plt.plot(p[0], p[1], 'bx')
-    plt.plot(p)
-    print(p)
-    #print(valXx)
+    for point in valXo:
+        plt.plot(point[0], point[1], 'ro')
+    for point in valXx:
+        plt.plot(point[0], point[1], 'bx')
+    #plt.plot(p.weight)
+    print("p: ")
+    print(p.weight[0]/-p.weight[2])
+    print(p.weight[1]/-p.weight[2])
+    #print("func: ")
+    #print(func)
+    x = np.arange(-1,2,2)
+    plt.plot(x, p.weight[1]/-p.weight[2]*x + p.weight[0]/-p.weight[2], '-')
+    #plt.plot(x, p.weight[1]/-p.weight[2]*x + p.weight[0]/-p.weight[2], '.')
+    plt.plot(x, b*x + a, '-g')
+    
+    #plt.plot(func, '-')
+    plt.axis([-1, 1, -1, 1])
     plt.show()
     return
 
@@ -60,7 +70,7 @@ class Perceptron:
     # @param x The given input instance
     # @return The output value of the perceptron {-1,1}
     def classify(self, x):
-        if x[0]*self.weight[1]+x[1]*self.weight[2]-self.weight[0]<0:
+        if x[0]*self.weight[1]+x[1]*self.weight[2]+self.weight[0]<0:
             return -1
         else:
             return 1
@@ -78,7 +88,7 @@ class Perceptron:
             return True
         else:
             vecX = [1,x[0],x[1]]
-            self.weight[0]=self.weight[0]+(-y)*vecX[0]
+            self.weight[0]=self.weight[0]+y*vecX[0]
             self.weight[1]=self.weight[1]+y*vecX[1]
             self.weight[2]=self.weight[2]+y*vecX[2]
             #print(self.weight)
@@ -99,6 +109,7 @@ class Perceptron:
                     optimal=False
                     #print("False"+str(valY))
                 #print("next")
+        print(self.weight)
         return count
 
 # Main Program        
@@ -111,7 +122,7 @@ if __name__ == "__main__":
     # Create the target function with fixed a and b
     targetFunc = lambda x: func(x,a,b)
     # Set the number of training data
-    numTrain = 1000
+    numTrain = 10
     # Create the input values for the training data
     trainX = np.random.rand(numTrain, 2)*2-1
     # Create the output values for the training data
@@ -120,8 +131,8 @@ if __name__ == "__main__":
         trainY.append(targetFunc(el))
     # Learn on the whole dataset
     dataset = list(zip(trainX, trainY))
-    print(a)
-    print(b)
+    print("a: "+str(a))
+    print("b: "+str(b))
     print("Iterations: "+str(p.learnDataset(dataset)))
     print('Terminated')
     # Plot the resulting approximation, training data and target function
